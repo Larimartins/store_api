@@ -6,7 +6,9 @@ from store.db.mongo import db_client
 from store.models.product import ProductModel
 from store.schemas.product import ProductIn, ProductOut, ProductUpdate, ProductUpdateOut
 from store.core.exceptions import NotFoundException
-
+from store.core.exceptions import InsertError
+from datetime import datetime
+from store.core.exceptions import NotFoundError
 
 class ProductUsecase:
     def __init__(self) -> None:
@@ -51,3 +53,41 @@ class ProductUsecase:
 
 
 product_usecase = ProductUsecase()
+
+def create_product(product_data):
+    try:
+        if not product_data:  
+            raise Exception("Dados inválidos para inserção")
+        return {"id": "12345", "message": "Produto criado com sucesso"}
+    except Exception as e:
+        raise InsertError(detail=f"Erro ao inserir produto: {str(e)}")
+    
+def update_product(product_id: str, update_data: dict):
+    try:
+        # Simule a busca pelo produto
+        product = {"id": product_id, "name": "Produto Teste"}  # Simulação
+        if not product:
+            raise NotFoundError(detail="Produto não encontrado")
+
+        # Atualize os dados
+        update_data["updated_at"] = datetime.utcnow()  # Atualiza o campo
+        # Simule a lógica de atualização no banco, ex.: db.collection.update_one(...)
+        return {"id": product_id, "updated_data": update_data}
+    except Exception as e:
+        raise e
+    
+    def filter_products_by_price(min_price: float, max_price: float):
+    try:
+        # Simule uma busca no banco
+        products = [
+            {"id": "1", "name": "Produto 1", "price": 6000},
+            {"id": "2", "name": "Produto 2", "price": 7500},
+            {"id": "3", "name": "Produto 3", "price": 8500},
+        ]
+        # Filtre os produtos pelo intervalo de preço
+        filtered_products = [
+            p for p in products if min_price < p["price"] < max_price
+        ]
+        return filtered_products
+    except Exception as e:
+        raise Exception(f"Erro ao filtrar produtos: {str(e)}")
